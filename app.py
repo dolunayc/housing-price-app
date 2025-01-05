@@ -44,7 +44,7 @@ min_rooms = st.slider("Minimum number of rooms:", 1, 10, 3)
 max_population = st.slider("Maximum population:", 100, 5000, 1000)
 
 # Kullanıcı kriterlerine göre filtreleme
-if st.button("Find Neighborhoods"):
+if st.button("Find Neighborhoods", key="find_neighborhoods_button"):
     filtered_data = data[
         (data['target'] * 1000 <= budget) & 
         (data['total_rooms'] >= min_rooms) & 
@@ -126,10 +126,15 @@ input_data = {}
 for col in X.columns:
     input_data[col] = st.number_input(f"Enter value for {col}:", value=float(data[col].mean()))
 
-if st.button("Predict"):
+# Her butona benzersiz key ekleyin
+if st.button("Predict", key="predict_button"):
     input_df = pd.DataFrame([input_data])
     prediction = model.predict(input_df)
-    st.write(f"The predicted median house value is **${prediction[0] * 1000:,.2f}**.")
+
+    # Negatif tahminleri engelle
+    prediction = max(0, prediction[0])  # Sıfırdan küçükse sıfır yap
+
+    st.write(f"The predicted median house value is **${prediction * 1000:,.2f}**.")
 
 # Gelişmiş görselleştirmeler
 st.subheader("Advanced Visualizations")
